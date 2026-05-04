@@ -1,58 +1,114 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Narendra Andaru - 72230614
+Keamanan Sistem Informasi
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+---
 
-## About Laravel
+# Dokumentasi Pembuatan Aplikasi Web Keamanan SI
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Dokumentasi ini menjelaskan proses pembuatan aplikasi web berbasis Laravel yang memiliki fitur autentikasi pengguna. Fitur utama yang dibuat meliputi login, registrasi, penyimpanan password dalam bentuk hash, konfirmasi registrasi (verifikasi email), dan reset password.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 1. Instalasi Laravel Breeze
 
-## Learning Laravel
+Pada tahap awal, saya menggunakan package **Laravel Breeze** untuk mempermudah pembuatan sistem autentikasi.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Perintah yang digunakan:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer require laravel/breeze --dev
+php artisan breeze:install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Breeze dipilih karena sudah menyediakan fitur login dan register secara otomatis tanpa harus membuat dari awal.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 2. Menjalankan Frontend dan Migrasi
 
-## Code of Conduct
+Setelah Breeze terinstall, saya menjalankan beberapa perintah untuk mengaktifkan tampilan dan database:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+npm install
+npm run dev
+php artisan migrate
+```
 
-## Security Vulnerabilities
+Migrasi ini akan membuat tabel penting seperti:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+* users
+* password_reset_tokens
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 3. Fitur Login
+
+Fitur login sudah otomatis tersedia dari Laravel Breeze. User dapat masuk ke sistem menggunakan email dan password yang sudah didaftarkan.
+
+---
+
+## 4. Penyimpanan Password (Hashing)
+
+Laravel secara otomatis menyimpan password dalam bentuk hash menggunakan sistem keamanan bawaan. Jadi password tidak disimpan dalam bentuk asli, melainkan sudah terenkripsi.
+
+Hal ini penting untuk menjaga keamanan data pengguna.
+
+---
+
+## 5. Fitur Registrasi
+
+Fitur registrasi memungkinkan pengguna membuat akun baru dengan mengisi:
+
+* Nama
+* Email
+* Password
+
+Data ini akan disimpan ke database setelah melalui proses validasi.
+
+---
+
+## 6. Konfirmasi Registrasi (Verifikasi Email)
+
+Untuk memastikan email yang digunakan valid, saya mengaktifkan fitur verifikasi email.
+
+Caranya dengan menambahkan `MustVerifyEmail` pada model User:
+
+```php
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+class User extends Authenticatable implements MustVerifyEmail
+{
+}
+```
+
+Setelah itu, setiap user yang mendaftar harus melakukan verifikasi melalui email sebelum bisa mengakses sistem.
+
+---
+
+## 7. Fitur Reset Password
+
+Laravel juga sudah menyediakan fitur reset password. Jika user lupa password, mereka bisa:
+
+* Menginput email
+* Mendapatkan link reset melalui email
+* Mengatur password baru
+
+---
+
+## 8. Konfigurasi Email dengan Mailtrap
+
+Untuk keperluan testing pengiriman email, saya menggunakan **Mailtrap**.
+
+Konfigurasi pada file `.env`:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=diisi_dari_mailtrap
+MAIL_PASSWORD=diisi_dari_mailtrap
+```
+
+Mailtrap digunakan agar email verifikasi dan reset password bisa diuji tanpa benar-benar dikirim ke email asli.
+
+---
