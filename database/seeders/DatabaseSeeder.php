@@ -15,11 +15,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Seeder Akun Admin Keamanan
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin Keamanan',
+            'email' => 'admin@keamanansi.test',
+            'password' => bcrypt('AdminKeamanan123!'), // Memenuhi kriteria password kuat
+            'role' => \App\Enums\Role::ADMIN,
+            'email_verified_at' => now(), // Bypass verifikasi email untuk testing
+        ]);
+
+        // Seeder Akun User Biasa
+        User::factory()->create([
+            'name' => 'User Biasa',
+            'email' => 'user@keamanansi.test',
+            'password' => bcrypt('UserBiasa123!'), // Memenuhi kriteria password kuat
+            'role' => \App\Enums\Role::USER,
+            'email_verified_at' => now(), // Bypass verifikasi email untuk testing
         ]);
     }
 }

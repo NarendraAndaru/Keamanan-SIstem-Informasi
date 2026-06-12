@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
+use App\Models\ActivityLog;
+
 class PasswordController extends Controller
 {
     /**
@@ -22,6 +24,16 @@ class PasswordController extends Controller
 
         $request->user()->update([
             'password' => Hash::make($validated['password']),
+        ]);
+
+        // Catat log audit secara manual
+        ActivityLog::create([
+            'user_id' => $request->user()->id,
+            'activity' => 'Profile - Password Changed',
+            'description' => "Pengguna memperbarui kata sandi akun mereka.",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'created_at' => now(),
         ]);
 
         return back()->with('status', 'password-updated');

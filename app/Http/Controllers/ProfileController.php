@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+use App\Models\ActivityLog;
+
 class ProfileController extends Controller
 {
     /**
@@ -34,6 +36,16 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
+        // Catat log audit secara manual
+        ActivityLog::create([
+            'user_id' => $request->user()->id,
+            'activity' => 'Profile - Update',
+            'description' => "Pengguna memperbarui informasi profil mereka.",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'created_at' => now(),
+        ]);
+
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
@@ -47,6 +59,16 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        // Catat log audit secara manual sebelum user dihapus
+        ActivityLog::create([
+            'user_id' => null, // Set null karena user akan di-delete
+            'activity' => 'Profile - Account Deleted',
+            'description' => "Pengguna menghapus akun mereka sendiri ({$user->email}).",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'created_at' => now(),
+        ]);
 
         Auth::logout();
 
